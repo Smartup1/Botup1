@@ -1,0 +1,254 @@
+import sqlite3
+import os
+import time,sys
+import re
+import requests
+import json
+from chatterbot.trainers import ListTrainer
+from chatterbot import ChatBot
+from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
+import csv
+import sqlite3
+
+
+
+
+
+
+
+
+
+
+####elements porque plural########
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+#contato[0].click()
+
+class wppbot:
+#Setamos o caminho de nossa aplicação
+#Nosso contrutor terá a entrada do nome do nosso 
+    def __init__(self,nome_bot):
+###chrome driver#######
+        dir_path = os.getcwd()
+        #self.bot = ChatBot(nome_bot,storage_adapter='chatterbot.storage.SQLStorageAdapter',
+    #database_uri='sqlite:///database.sqlite3',
+    #logic_adapters=[
+     #   "chatterbot.logic.BestMatch"])
+       #bot.set_trainer(ListTrainer)
+        #self.trainer = ListTrainer(self.bot)
+        print(dir_path)
+        self.chrome =r"C:\Users\USER\Desktop\zap project\chromedriver.exe"
+        self.options = webdriver.ChromeOptions()
+###ele busca os dados no chrome como o historico web#####
+        self.options.add_argument(r"user-data-dir=C:\Users\USER\AppData\Local\Google\Chrome\Application")
+###coloca no driver o chromedriver e opção user-data-dir#####
+        self.driver = webdriver.Chrome(self.chrome,chrome_options=self.options)
+        self.driver.get('https://web.whatsapp.com/')
+        self.driver.implicitly_wait(3)
+    def inicia(self):
+        self.driver.get('https://web.whatsapp.com/')
+        post=self.driver.find_elements_by_class_name('P6z4j')
+        if len(post) != 0:
+            action = ActionChains(self.driver)
+            action.move_to_element(post[0]).perform()
+            post[0].click()
+            time.sleep(3)
+        
+ # text=post.find_element_by_css_selector('span.selectable-text').text
+    def saudacao(self,frase_inicial):
+        try:
+        for frase in frase_inicial:
+            self.msg_box =self.driver.find_element_by_class_name('_3u328')
+            self.msg_box.send_keys(frase)
+    #Setamos o botão de enviar e clicamos para enviar.
+            self.button =self.driver.find_element_by_class_name('_3M-N-')
+            self.button.click()
+        ######################################################
+            time.sleep(2)
+                ############métodos de limpeza#############
+        except:
+            print("erro")
+
+    def limpa(self):
+        self.upbottom=self.driver.find_element_by_xpath('//div[@class="_2kYeZ"]//div[3]//div[1]')
+        self.upbottom.click()
+        self.apagarconversa=self.driver.find_element_by_xpath("//div[contains(text(),'Limpar mensagens')]")
+        self.apagarconversa.click()
+        self.apagarbottom=self.driver.find_element_by_xpath("//div[@class='_2eK7W _3PQ7V']")
+        self.apagarbottom.click()
+        time.sleep(2)
+        
+    def escuta(self):
+
+        post3 =self.driver.find_elements_by_class_name('_12pGw')
+        print(post3)
+      #Vamos pegar o índice da última conversa.
+        ultimo = len(post3)-1
+        texto = post3[ultimo].find_element_by_css_selector('span.selectable-text').text
+#Vamos pegar o  texto da última conversa e retornar.
+        print(texto)
+        time.sleep(3)
+        return texto
+            
+
+
+        
+            
+    def responde(self,texto,x):
+         #método chatterbot   resp =self.bot.get_response(texto)
+        #if float(resp.confidence) > 0.2:
+         #   print(resp)
+        #else:
+          #  print('Responda a pergunta conforme solicitado"[Use as opções respondendo a sua escolha]"')
+            valor=texto
+            x=x
+            c=con.cursor()
+            if valor.isdigit() and x==1:
+                bot.saudação()
+            else:
+                    c.execute("INSERT INTO Cliente2 (value) VALUES('?')",(valor))
+                    con.commit()
+
+                    a=c.execute('select id,text from statement2')
+                    for index,linha in a:
+                        if index==x:
+                            print(linha,index)
+#Setamos caixa de mensagens preenchemos com a resposta e clicamos em enviar.
+                    self.caixa_de_mensagem =self.driver.find_element_by_class_name('_3u328')
+                    self.caixa_de_mensagem.send_keys(linha)
+        ########timer de resposta apresar usuário#########
+                    self.botao_enviar =self.driver.find_element_by_class_name('_3M-N-')
+                    self.botao_enviar.click()
+        
+    #def treina(self,nome_pasta):
+    #Listamos todos os arquivos dentro da pasta e para cada linha treinamos nosso bot.
+       # for treino in os.listdir(nome_pasta):
+        #    conversas = open(nome_pasta+'.txt','r').readlines()
+         #   self.trainer.train(conversas)
+
+############################################################################
+#if texto != frase_inicial:
+        #################################MAIN PRICIPAL #################################################
+con = sqlite3.connect(r"C:\Users\USER\database.sqlite3")
+ultimo_texto =['Olá nome!Seja-bem-Vindo\n'
+               'Digite seu nome e sobrenome\n']
+bot = wppbot('robo')
+#Treinamos o nosso bot informando a pasta que está a nossas legendas.
+#bot.treina('a')
+bot.inicia()
+#Iniciamos o bot informando o grupo/pessoa que vamos conversar.
+time.sleep(2)
+#Iniciamos o bot informando o grupo/pessoa que vamos conversar.
+bot.saudacao(['Olá nome!Seja-bem-Vindo\n'
+             'Digite seu nome e sobrenome\n'])
+time.sleep(5)
+#Setamos a váriável último texto sem nada.
+x=0
+
+
+
+#Sempre será true então nunca irá parar nosso script.
+
+while True:
+#Usamos o método de escuta que irá setar na variável texto.
+    try:
+            texto = bot.escuta()
+            if texto != ultimo_texto:
+#Passando na validação setamos o texto como último texto.
+                texto = texto.lower()
+                x=x+1
+        
+
+        #Enviamos para o método responde que irá responder no grupo/pessoa.
+                bot.responde(texto,x)
+        #nova function o ultimo_texto recebendo bot.escuta evita o texto ser diferente
+        #do ultimo texto toda hora e o loop ficar se auto respondendo.
+
+                ultimo_texto = bot.escuta()
+                time.sleep(10)
+            else: 
+                x=0
+                bot.inicia()
+    except:
+        print('erroaconteceu')
+        time.sleep(3)
+        bot.inicia()
+
+#Agora validamos se o texto enviado no grupo/pessoa é o mesmo que o último já lido.
+#Essa validação serve para que o bot não fique respondendo o mesmo texto sempre.
+#Validamos também se no texto possuí o comando :: no início para que ele responda.
+       
+        ########################################################
+        import csv
+import sqlite3
+import datetime
+con = sqlite3.connect(r"C:\Users\USER\database.sqlite3")
+
+
+# Seleciona todos os registros e recupera os registros
+c=con.cursor()
+
+#for index in a.fetchall():
+ #   print(index)
+#x=input("qual valor")
+#z=str(input("qual nome"))
+#f=3
+#a=datetime.datetime.now()
+#try:
+#c.execute("INSERT INTO Cliente2 (nome,value,Date)VALUES('erica',30,datetime('now','localtime'));")
+#for a in c.fetchall():
+z=int(input("numero"))
+x=input("nome")
+a=c.execute("SELECT max(Id) FROM Cliente2")
+c.execute("INSERT INTO Cliente2 (value) VALUES(\"%s\") WHERE Id =(\"%s\");"%(z,a))
+#c.execute("INSERT INTO Cliente2 (nome) VALUES(\"%s\");"%(x))
+
+con.commit()
+
+
+
+
+
+
+
+
+############################################################################
+while True:
+    x=input("entradado usuario")
+    f=int(input("qual nivel do usuário"))
+    if x.isdigit() and f==1:
+        print("Voçe não digitou seu nome.Digite agora?")
+        #c.execute("UPDATE Cliente2 SET value=value || ? WHERE nome=?",(x,z))
+        #con.commit()
+        #c.close()
+    elif x.isdigit() and f>1: 
+        #inserir o digito no ultimo nome do banco com update com select
+        c.execute("UPDATE Cliente2 SET value=value || (\"%s\") WHERE Id=(SELECTmax(Id) FROM Cliente2);"%(x))
+        #c.execute("INSERT INTO Cliente2 (nome) VALUES(\"%s\");"%(z))
+        con.commit()
+    elif not x.isdigit() and f>1:
+        print("Escolha umas das opções")
+    else:
+        c.execute("INSERT INTO Cliente2 (nome) VALUES(\"%s\");"%(x))
+        con.commit()
+        print("add")
+
+    #for index in a:
+ #   print(index[1])
+
+#   if index!=null:
+#      print(index)
+    
+    
+    
+    
+    #####################################################
+   
+#if w.isdigit():
+ #   c.execute("INSERT INTO Cliente2 (value) VALUES(?)",(w))
+  #  con.commit()
+#else:
+ #   c.execute("INSERT INTO Cliente2 (nome) VALUES(?)",(w))
+  #  con.commit()
+
