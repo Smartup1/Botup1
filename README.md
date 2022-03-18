@@ -1,2 +1,6 @@
-# Botup1
-BOT automatizador de chat  através de plataforma ou app de conversa tipo whatsapp,telegram.
+Hi there.
+I'm Douglas Henrique, a WEB developer from Brazil.
+
+Social
+LinkedIn - https://www.linkedin.com/in/henriquegomes/
+
