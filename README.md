@@ -1,2 +1,2 @@
 # Botup1
-BOT automatizador de chat  através de plataforma ou app de conversa tipo wattsap,telegram.
+BOT automatizador de chat  através de plataforma ou app de conversa tipo whatsapp,telegram.
